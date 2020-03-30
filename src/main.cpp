@@ -6,21 +6,23 @@
 #include <coreinit/title.h>
 #include <curl/curl.h>
 
+#define HOMESERVER "tag.rc24.xyz"
+
 WUPS_PLUGIN_NAME("UTag");
 WUPS_PLUGIN_DESCRIPTION("Display the titles you play on your tag!");
-WUPS_PLUGIN_VERSION("v1.0");
+WUPS_PLUGIN_VERSION("v1.1");
 WUPS_PLUGIN_AUTHOR("twosecslater");
 WUPS_PLUGIN_LICENSE("GPLv3");
 
 WUPS_FS_ACCESS();
 
-#define HOMESERVER "tag.rc24.xyz"
 char key[129];
 
 INITIALIZE_PLUGIN() {
     int fd=-1;
     fd = open("sd:/utag.txt", O_RDONLY);
     read(fd, key, 128);
+    close(fd);
 }
 
 ON_APPLICATION_START(args) {
