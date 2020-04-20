@@ -10,7 +10,7 @@
 
 WUPS_PLUGIN_NAME("UTag");
 WUPS_PLUGIN_DESCRIPTION("Display the titles you play on your tag!");
-WUPS_PLUGIN_VERSION("v1.1");
+WUPS_PLUGIN_VERSION("v1.0.1");
 WUPS_PLUGIN_AUTHOR("twosecslater");
 WUPS_PLUGIN_LICENSE("GPLv3");
 
@@ -40,6 +40,7 @@ ON_APPLICATION_START(args) {
         CURL *curl = curl_easy_init();
         CURLcode ec;
         curl_easy_setopt(curl, CURLOPT_URL, tagURL);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
         ec = curl_easy_perform(curl);
         if(ec != CURLE_OK) {
             DEBUG_FUNCTION_LINE("curl failed with exit code %s", curl_easy_strerror(ec));
