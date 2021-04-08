@@ -45,15 +45,10 @@ ON_APPLICATION_START() {
     sprintf(tempTID, "%llx", OSGetTitleID());
     sprintf(TID, "%016s", tempTID);
     snprintf(type, sizeof(type), TID);
-    DEBUG_FUNCTION_LINE("UTAG: tempTID is %s", tempTID);
-    DEBUG_FUNCTION_LINE("UTAG: TID is %s", TID);
-    DEBUG_FUNCTION_LINE("UTAG: Type is %s", type);
 
     char tagURL[180];
     snprintf(tagURL, sizeof(tagURL), "http://%s/wiiu?game=%s&key=%s", SERVER, TID, key);
-    DEBUG_FUNCTION_LINE("Tag URL is %s", tagURL);
     if (strcmp(type, "00050000") == 0) {
-        DEBUG_FUNCTION_LINE("UTAG: Get ready for cURL!");
         CURL *curl = curl_easy_init();
         CURLcode ec;
         curl_easy_setopt(curl, CURLOPT_URL, tagURL);
