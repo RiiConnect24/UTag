@@ -1,8 +1,6 @@
 #include <wups.h>
 #include <utils/logger.h>
 #include <cstring>
-#include <nsysnet/socket.h>
-#include <coreinit/title.h>
 #include <curl/curl.h>
 #include <whb/log_udp.h>
 
@@ -17,6 +15,7 @@ WUPS_PLUGIN_LICENSE("GPLv3");
 WUPS_USE_WUT_DEVOPTAB();
 
 char key[129];
+char titleId[17];
 
 INITIALIZE_PLUGIN() {
     WHBLogUdpInit();
@@ -30,33 +29,60 @@ INITIALIZE_PLUGIN() {
     fclose(fp);
 }
 
-ON_APPLICATION_START() {
+DECL_FUNCTION(uint32_t, MCP_RightCheckLaunchable, uint32_t *u1, uint32_t *u2, uint32_t u3, uint32_t u4, uint32_t u5) {
     WHBLogUdpInit();
+    DEBUG_FUNCTION_LINE("UTag: Entered MCP_RightCheckLaunchable()");
+    uint32_t result = real_MCP_RightCheckLaunchable(u1, u2, u3, u4, u5);
+
+    if (result == 0 && strlen(key) != 0) {
+        uint64_t tid = ((uint64_t) u3) << 32 | u4;
+        sprintf(titleId, "%016llX", tid);
+        DEBUG_FUNCTION_LINE("TitleID: %s", titleId);
+    }
+
+    return result;
+}
+
+WUPS_MUST_REPLACE(MCP_RightCheckLaunchable, WUPS_LOADER_LIBRARY_COREINIT, MCP_RightCheckLaunchable);
+
+ON_APPLICATION_REQUESTS_EXIT() {
+    WHBLogUdpInit();
+
+    DEBUG_FUNCTION_LINE("UTag: ON_APPLICATION_REQUESTS_EXIT() called");
 
     if (strlen(key) == 0) {
         DEBUG_FUNCTION_LINE("Key not loaded, so ignoring.");
         return;
+    } else if (strlen(titleId) == 0) {
+        DEBUG_FUNCTION_LINE("TitleID is not set, so ignoring.")
+        return;
     }
 
-    socket_lib_init();
-    char tempTID[17];
-    char TID[17];
     char type[9];
-    sprintf(tempTID, "%llx", OSGetTitleID());
-    sprintf(TID, "%016s", tempTID);
-    snprintf(type, sizeof(type), TID);
-
     char tagURL[180];
-    snprintf(tagURL, sizeof(tagURL), "http://%s/wiiu?game=%s&key=%s", SERVER, TID, key);
-    if (strcmp(type, "00050000") == 0) {
-        CURL *curl = curl_easy_init();
-        CURLcode ec;
-        curl_easy_setopt(curl, CURLOPT_URL, tagURL);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-        ec = curl_easy_perform(curl);
-        if (ec != CURLE_OK) {
-            DEBUG_FUNCTION_LINE("curl failed with exit code %s", curl_easy_strerror(ec));
-        }
-        curl_easy_cleanup(curl);
+    snprintf(type, sizeof(type), titleId);
+
+    if (strcmp(type, "00050000") == 0) { // Wii U title
+        snprintf(tagURL, sizeof(tagURL), "http://%s/wiiu?game=%s&key=%s", SERVER, titleId, key);
+    } else if (strcmp(type, "00050002") == 0) { // Wii VC Inject - normally an eShop demo but who plays those?
+        // TODO: Sends whole titleid to the server, is currently not handled by RiiTag
+        snprintf(tagURL, sizeof(tagURL), "http://%s/wii?game=%s&key=%s", SERVER, titleId, key);
+    } else {
+        memset(&titleId[0], 0, sizeof(titleId));;
+        return;
     }
+
+    // DEBUG_FUNCTION_LINE("Tag URL is %s", tagURL);
+    DEBUG_FUNCTION_LINE("Starting cURL");
+
+    CURL *curl = curl_easy_init();
+    CURLcode ec;
+    curl_easy_setopt(curl, CURLOPT_URL, tagURL);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+    ec = curl_easy_perform(curl);
+    if (ec != CURLE_OK) {
+        DEBUG_FUNCTION_LINE("curl failed with exit code %s", curl_easy_strerror(ec));
+    }
+    curl_easy_cleanup(curl);
+    memset(&titleId[0], 0, sizeof(titleId));;
 }
