@@ -62,11 +62,8 @@ ON_APPLICATION_REQUESTS_EXIT() {
     char tagURL[180];
     snprintf(type, sizeof(type), titleId);
 
-    if (strcmp(type, "00050000") == 0) { // Wii U title
+    if (strcmp(type, "00050000") == 0 || strcmp(type, "00050002") == 0) {
         snprintf(tagURL, sizeof(tagURL), "http://%s/wiiu?game=%s&key=%s", SERVER, titleId, key);
-    } else if (strcmp(type, "00050002") == 0) { // Wii VC Inject - normally an eShop demo but who plays those?
-        // TODO: Sends whole titleid to the server, is currently not handled by RiiTag
-        snprintf(tagURL, sizeof(tagURL), "http://%s/wii?game=%s&key=%s", SERVER, titleId, key);
     } else {
         memset(&titleId[0], 0, sizeof(titleId));;
         return;
