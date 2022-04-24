@@ -31,14 +31,12 @@ ON_APPLICATION_START(args) {
     log_init();
     uint64_t title_id = OSGetTitleID();
     uint32_t t_type = title_id >> 32;
-    uint32_t t_gid = title_id & 0xffffffff;
-    uint16_t t_gid_high = t_gid >> 16;
-    uint16_t t_gid_low = t_gid & 0xffff;
+    uint16_t t_gid_high = (title_id >> 16) & 0xffff;
+    uint16_t t_gid_low = title_id & 0xffff;
     bool is_uwuvci = false;
     char TID[17];
     if (t_type == 0x00050002 &&
-            (t_gid_high > 0x3000 && t_gid_high < 0x10000) &&
-            (t_gid_low > 0x3000 && t_gid_low < 0x10000)) { // UWUVCI AIO Injected game
+            (t_gid_high >= 0x3000 && t_gid_low >= 0x3000)) { // UWUVCI AIO Injected game
         // need to be aligned to 0x40 for IOSU
         alignas(0x40) ACPMetaXml meta;
         ACPResult result = ACPGetTitleMetaXml(title_id, &meta);
