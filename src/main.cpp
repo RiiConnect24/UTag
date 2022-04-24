@@ -30,10 +30,10 @@ ON_APPLICATION_START(args) {
     socket_lib_init();
     log_init();
     uint64_t title_id = OSGetTitleID();
-    uint64_t t_type = title_id >> 32;
-    uint64_t t_gid = title_id & 0xffffffff;
-    uint64_t t_gid_high = t_gid >> 16;
-    uint64_t t_gid_low = t_gid & 0xffff;
+    uint32_t t_type = title_id >> 32;
+    uint32_t t_gid = title_id & 0xffffffff;
+    uint16_t t_gid_high = t_gid >> 16;
+    uint16_t t_gid_low = t_gid & 0xffff;
     bool is_uwuvci = false;
     char TID[17];
     if (t_type == 0x00050002 &&
@@ -42,7 +42,7 @@ ON_APPLICATION_START(args) {
         ACPMetaXml meta;
         ACPGetTitleMetaXml(title_id, &meta);
         // transform it to (TeconMoon's) vc injection id format
-        sprintf(TID, "%08lx%08lx", t_type, meta.reserved_flag2);
+        sprintf(TID, "%08x%08x", t_type, meta.reserved_flag6); // should be reserved_flag2 according to meta.xml, maybe wut lib or somewhere go wrong?
         is_uwuvci = true;
     } else { // normal wiiu tid
         sprintf(TID, "%016llx", title_id);
