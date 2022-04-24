@@ -40,11 +40,19 @@ ON_APPLICATION_START(args) {
             (t_gid_high > 0x3000 && t_gid_high < 0x10000) &&
             (t_gid_low > 0x3000 && t_gid_low < 0x10000)) { // UWUVCI AIO Injected game
         ACPMetaXml meta;
-        ACPGetTitleMetaXml(title_id, &meta);
-        // transform it to (TeconMoon's) vc injection id format
-        sprintf(TID, "%08x%08x", t_type, meta.reserved_flag6); // should be reserved_flag2 according to meta.xml, maybe wut lib or somewhere go wrong?
-        is_uwuvci = true;
-    } else { // normal wiiu tid
+        ACPResult result = ACPGetTitleMetaXml(title_id, &meta);
+        if (result == ACPResult::ACP_RESULT_SUCCESS) {
+            uint32_t real_tid = meta.reserved_flag6; // should be reserved_flag2 according to meta.xml, maybe wut lib or somewhere go wrong?
+            char real_t_type = (char)(real_tid >> 24);
+            if ((real_t_type > 'A' && real_t_type < 'Z') || // should be uppercase letter for correct titles
+                    (real_t_type > '0' && real_t_type < '9')) { // only 091E00 falls into this?
+                // transform it to (TeconMoon's) vc injection id format
+                sprintf(TID, "%08x%08x", t_type, real_tid);
+                is_uwuvci = true;
+            }
+        }
+    }
+    if (!is_uwuvci) { // normal wiiu tid
         sprintf(TID, "%016llx", title_id);
     }
     char tagURL[180];
