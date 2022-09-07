@@ -4,7 +4,9 @@
 #include <whb/log_udp.h>
 #include <wups.h>
 
+#ifndef SERVER
 #define SERVER "tag.rc24.xyz"
+#endif
 
 WUPS_PLUGIN_NAME("UTag");
 WUPS_PLUGIN_DESCRIPTION("Display the last played titles on your RiiTag!");

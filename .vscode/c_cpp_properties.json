@@ -15,7 +15,7 @@
             "compilerPath": "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x86"
         }
     ],
     "version": 4

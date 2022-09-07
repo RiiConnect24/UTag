@@ -42,6 +42,10 @@ LDFLAGS	=	-g $(ARCH) $(RPXSPECS) -Wl,-Map,$(notdir $*.map) $(WUPSSPECS)
 
 LIBS	:=  -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lwups -lwut -lz
 
+ifdef SERVER
+    CFLAGS += -DSERVER=$(SERVER)
+endif
+
 #-------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level
 # containing include and lib
