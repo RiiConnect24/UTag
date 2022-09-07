@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/devkitpro/devkitPPC/powerpc-eabi/include/**",
+                "/opt/devkitpro/devkitPPC/include/**",
+                "/opt/devkitpro/portlibs/ppc/include/**",
+                "/opt/devkitpro/portlibs/wiiu/include/**",
+                "/opt/devkitpro/wut/include/**",
+                "/opt/devkitpro/wups/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
