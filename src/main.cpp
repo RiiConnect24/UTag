@@ -1,7 +1,6 @@
 #include <cstring>
 #include <curl/curl.h>
 #include <utils/logger.h>
-#include <whb/log_udp.h>
 #include <wups.h>
 
 #ifndef SERVER
@@ -20,11 +19,13 @@ char key[129];
 char titleId[17];
 
 INITIALIZE_PLUGIN() {
-  WHBLogUdpInit();
+  initLogging();
+
+  DEBUG_FUNCTION_LINE("Initializing");
 
   FILE *fp = fopen("fs:/vol/external01/wiiu/utag.txt", "r");
   if (!fp) {
-    DEBUG_FUNCTION_LINE("utag.txt not found in SD://wiiu/")
+    DEBUG_FUNCTION_LINE("utag.txt not found in SD://wiiu/utag.txt");
     return;
   }
   fread(key, 128, 1, fp);
@@ -33,8 +34,8 @@ INITIALIZE_PLUGIN() {
 
 DECL_FUNCTION(uint32_t, MCP_RightCheckLaunchable, uint32_t *u1, uint32_t *u2,
               uint32_t u3, uint32_t u4, uint32_t u5) {
-  WHBLogUdpInit();
-  DEBUG_FUNCTION_LINE("UTag: Entered MCP_RightCheckLaunchable()");
+  initLogging();
+  DEBUG_FUNCTION_LINE("Entered MCP_RightCheckLaunchable()");
   uint32_t result = real_MCP_RightCheckLaunchable(u1, u2, u3, u4, u5);
 
   if (result == 0 && strlen(key) != 0) {
@@ -50,15 +51,15 @@ WUPS_MUST_REPLACE(MCP_RightCheckLaunchable, WUPS_LOADER_LIBRARY_COREINIT,
                   MCP_RightCheckLaunchable);
 
 ON_APPLICATION_REQUESTS_EXIT() {
-  WHBLogUdpInit();
+  initLogging();
 
-  DEBUG_FUNCTION_LINE("UTag: ON_APPLICATION_REQUESTS_EXIT() called");
+  DEBUG_FUNCTION_LINE("ON_APPLICATION_REQUESTS_EXIT() called");
 
   if (strlen(key) == 0) {
     DEBUG_FUNCTION_LINE("Key not loaded, so ignoring.");
     return;
   } else if (strlen(titleId) == 0) {
-    DEBUG_FUNCTION_LINE("TitleID is not set, so ignoring.")
+    DEBUG_FUNCTION_LINE("TitleID is not set, so ignoring.");
     return;
   }
 
@@ -71,12 +72,11 @@ ON_APPLICATION_REQUESTS_EXIT() {
              titleId, key);
   } else {
     memset(&titleId[0], 0, sizeof(titleId));
-    ;
     return;
   }
 
-  // DEBUG_FUNCTION_LINE("Tag URL is %s", tagURL);
-  DEBUG_FUNCTION_LINE("Starting cURL");
+  DEBUG_FUNCTION_LINE_VERBOSE("Tag URL is %s", tagURL);
+  DEBUG_FUNCTION_LINE("Contacting RiiTag");
 
   CURL *curl = curl_easy_init();
   CURLcode ec;
@@ -86,7 +86,11 @@ ON_APPLICATION_REQUESTS_EXIT() {
   if (ec != CURLE_OK) {
     DEBUG_FUNCTION_LINE("curl failed with exit code %s",
                         curl_easy_strerror(ec));
+  } else {
+    DEBUG_FUNCTION_LINE("RiiTag updated");
   }
   curl_easy_cleanup(curl);
   memset(&titleId[0], 0, sizeof(titleId));
+
+  deinitLogging();
 }
