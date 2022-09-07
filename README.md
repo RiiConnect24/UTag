@@ -1,19 +1,21 @@
 UTag
 ===
-A Wii U plugin whichs sends the titles you play to your [RiiTag](https://tag.rc24.xyz/)!
+A Wii U plugin which sends the titles you play to your [RiiTag](https://tag.rc24.xyz/)!
+
+## Using
+
+1. Download the [latest stable release](https://github.com/RiiConnect24/UTag/releases/latest)
+2. Place the `utag.wps` inside `SD://wiiu/environments/aroma/plugins`
+3. Create a text file in `SD://wiiu/utag.txt`
+4. Paste your RiiTag key inside (you can find it on the RiiTag website
+   under ["Edit Your Tag"](https://tag.rc24.xyz/edit))
+
+**NOTE:** All titles except applets (browser, etc.) and system titles are counted, but not all
+games have covers.
 
 ## Building
+
 For building you need:
-* [wups](https://github.com/Maschell/WiiUPluginSystem)
-* [wut](https://github.com/decaf-emu/wut)
-* [libutils](https://github.com/Maschell/libutils/tree/wut) for common functions (WUT version).
 
-Install them (in this order) according to their README's. Don't forget the dependencies of the libs itself.
-
-You should then be able to run the following commands in the directory of this repository:
-```bash
-make clean
-make
-wiiload UTag.mod # If you wish to load the plugin over the network while the WUPL is running on the target console
-```
-The output `UTag.mod` file should be placed in `sd:/wiiu/plugins/`, and loaded with the WUPL.
+* [wups](https://github.com/wiiu-env/WiiUPluginSystem)
+* [wut](https://github.com/devkitPro/wut)
