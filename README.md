@@ -4,13 +4,16 @@
 
 A Wii U plugin which sends the titles you play to your [RiiTag](https://tag.rc24.xyz/)!
 
+**This will only work with [Aroma](https://aroma.foryour.cafe/)!**
+
 ## Usage
 
-1. Download the [latest stable release](https://github.com/RiiConnect24/UTag/releases/latest)
-2. Place the `utag.wps` inside `SD://wiiu/environments/aroma/plugins/`
-3. Create a text file in `SD://wiiu/utag.txt`
-4. Paste your RiiTag key inside (you can find it on the RiiTag website
-   under ["Account"](https://tag.rc24.xyz/account))
+1. Install [Aroma](https://aroma.foryour.cafe/)
+2. Download the [latest stable release](https://github.com/RiiConnect24/UTag/releases/latest)
+3. Place the `utag.wps` inside `SD://wiiu/environments/aroma/plugins/`
+4. Create a text file in `SD://wiiu/utag.txt`
+5. Paste your RiiTag key inside (you can find it on the RiiTag website
+   under ["Account"](https://tag.rc24.xyz/account)). Do NOT use Windows Notepad!
 
 **NOTE:** All titles except applets (browser, etc.) and system titles are counted, but not all
 games have covers.
